@@ -1,4 +1,4 @@
-package com.adioss.local.bigtransfer;
+package com.adioss.remote.bigtransfer;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -25,7 +25,7 @@ public class Master {
         }
         final byte[] stream = Files.readAllBytes(Paths.get(TEST_BIG_FILE_PATH));
         String indexPath = Utils.prepareIndexDirectory(TEST_INDEX_DIRECTORY_PATH);
-        m_chronicle = ChronicleQueueBuilder.indexed(indexPath).build();
+        m_chronicle = ChronicleQueueBuilder.indexed(indexPath).source().bindAddress(PORT).build();
         m_appender = m_chronicle.createAppender();
         m_server = new Thread(new Runnable() {
             @Override
@@ -36,7 +36,7 @@ public class Master {
                     m_logger.info("server:" + stream.length + " for index " + m_appender.index());
                     publish(stream);
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         //
                     }

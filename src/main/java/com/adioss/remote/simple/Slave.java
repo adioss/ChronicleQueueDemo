@@ -7,6 +7,8 @@ import net.openhft.chronicle.Chronicle;
 import net.openhft.chronicle.ChronicleQueueBuilder;
 import net.openhft.chronicle.ExcerptTailer;
 
+import static com.adioss.Utils.*;
+
 public class Slave {
     Logger m_logger = Logger.getLogger(Slave.class.getName());
 
@@ -16,7 +18,7 @@ public class Slave {
     private boolean m_running;
 
     public Slave() throws IOException, InterruptedException {
-        m_chronicle = ChronicleQueueBuilder.remoteTailer().connectAddress(new InetSocketAddress("localhost", 12345)).build();
+        m_chronicle = ChronicleQueueBuilder.remoteTailer().connectAddress(new InetSocketAddress(HOST, PORT)).build();
         m_tailer = m_chronicle.createTailer();
         m_client = new Thread(new Runnable() {
             @Override

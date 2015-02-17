@@ -1,7 +1,9 @@
-package com.adioss.remote.cycle;
+package com.adioss.remote.bigtransfer;
 
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.util.logging.*;
+import com.adioss.Utils;
 import net.openhft.chronicle.Chronicle;
 import net.openhft.chronicle.ChronicleQueueBuilder;
 import net.openhft.chronicle.ExcerptTailer;
@@ -17,12 +19,9 @@ public class Slave {
     private boolean m_running;
 
     public Slave() throws IOException, InterruptedException {
-        String indexPath = prepareIndexDirectory(TEST_INDEX_DIRECTORY_PATH + "sink");
-        int tenSeconds = 10 * 1000;
-        m_chronicle = ChronicleQueueBuilder.vanilla(indexPath).cycleLength(3600000).build();
-        //m_chronicle = ChronicleQueueBuilder.remoteTailer().connectAddress(new InetSocketAddress(Utils.HOST, Utils.PORT)).build();
-        m_tailer = ChronicleQueueBuilder.sink(m_chronicle).connectAddress(HOST, PORT).build().createTailer();
-
+        String indexPath = Utils.waitForIndexPath(TEST_INDEX_DIRECTORY_PATH);
+        m_chronicle = ChronicleQueueBuilder.remoteTailer().connectAddress(new InetSocketAddress(HOST, PORT)).build();
+        m_tailer = m_chronicle.createTailer();
         m_client = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -40,7 +39,7 @@ public class Slave {
                     int size = m_tailer.readInt();
                     byte[] stream = new byte[size];
                     m_tailer.read(stream);
-                    m_logger.info("client:" + new String(stream));
+                    m_logger.info("client:" + stream.length + " for index " + m_tailer.index());
                 }
             }
         });
