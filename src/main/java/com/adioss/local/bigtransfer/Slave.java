@@ -38,7 +38,7 @@ public class Slave {
                     int size = m_tailer.readInt();
                     byte[] stream = new byte[size];
                     m_tailer.read(stream);
-                    m_logger.info("client:" + stream.length);
+                    m_logger.info("client:" + stream.length + " for index " + m_tailer.index());
                 }
             }
         });

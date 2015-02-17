@@ -23,6 +23,7 @@ public class Master {
         if (!file.exists()) {
             System.exit(0);
         }
+        final byte[] stream = Files.readAllBytes(Paths.get(TEST_BIG_FILE_PATH));
         String indexPath = Utils.prepareIndexDirectory(TEST_INDEX_DIRECTORY_PATH);
         m_chronicle = ChronicleQueueBuilder.indexed(indexPath).build();
         m_appender = m_chronicle.createAppender();
@@ -32,14 +33,8 @@ public class Master {
                 m_chronicle.clear();
                 m_logger.info("start server");
                 for (long i = 1; i <= 1000000; i++) {
-
-                    try {
-                        byte[] stream = Files.readAllBytes(Paths.get(TEST_BIG_FILE_PATH));
-                        m_logger.info("server:" + stream.length);
-                        publish(stream);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    m_logger.info("server:" + stream.length + " for index " + m_appender.index());
+                    publish(stream);
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
