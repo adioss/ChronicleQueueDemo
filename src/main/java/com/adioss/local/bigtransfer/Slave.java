@@ -1,4 +1,4 @@
-package com.adioss.remote.cycle;
+package com.adioss.local.bigtransfer;
 
 import java.io.*;
 import java.util.logging.*;
@@ -18,12 +18,9 @@ public class Slave {
     private boolean m_running;
 
     public Slave() throws IOException, InterruptedException {
-        String indexPath = Utils.prepareIndexDirectory(TEST_INDEX_DIRECTORY_PATH + "sink");
-        int tenSeconds = 10 * 1000;
-        m_chronicle = ChronicleQueueBuilder.vanilla(indexPath).cycleLength(3600000).build();
-        //m_chronicle = ChronicleQueueBuilder.remoteTailer().connectAddress(new InetSocketAddress("localhost", 12345)).build();
-        m_tailer = ChronicleQueueBuilder.sink(m_chronicle).connectAddress("localhost", 12345).build().createTailer();
-
+        String indexPath = Utils.waitForIndexPath(TEST_INDEX_DIRECTORY_PATH);
+        m_chronicle = ChronicleQueueBuilder.indexed(indexPath).build();
+        m_tailer = m_chronicle.createTailer();
         m_client = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -41,7 +38,7 @@ public class Slave {
                     int size = m_tailer.readInt();
                     byte[] stream = new byte[size];
                     m_tailer.read(stream);
-                    m_logger.info("client:" + new String(stream));
+                    m_logger.info("client:" + stream.length);
                 }
             }
         });

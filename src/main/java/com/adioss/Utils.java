@@ -6,6 +6,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Utils {
+    public final static String TEST_INDEX_DIRECTORY_PATH = "d:\\test";
+    public final static String TEST_BIG_FILE_PATH = "d:\\test.pdf";
+
     public static void deleteIndexBeforeStart(String basePath) {
         try {
             Path path = Paths.get(basePath);

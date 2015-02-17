@@ -7,6 +7,8 @@ import net.openhft.chronicle.Chronicle;
 import net.openhft.chronicle.ChronicleQueueBuilder;
 import net.openhft.chronicle.ExcerptAppender;
 
+import static com.adioss.Utils.TEST_INDEX_DIRECTORY_PATH;
+
 public class Master {
     Logger m_logger = Logger.getLogger(Master.class.getName());
 
@@ -15,7 +17,7 @@ public class Master {
     private final Thread m_server;
 
     public Master() throws IOException {
-        String indexPath = Utils.prepareIndexDirectory("d:\\test");
+        String indexPath = Utils.prepareIndexDirectory(TEST_INDEX_DIRECTORY_PATH);
         m_chronicle = ChronicleQueueBuilder.indexed(indexPath).build();
         m_appender = m_chronicle.createAppender();
         m_server = new Thread(new Runnable() {

@@ -1,13 +1,15 @@
-package com.adioss.remote.simple;
+package com.adioss.local.bigtransfer;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.logging.*;
 import com.adioss.Utils;
 import net.openhft.chronicle.Chronicle;
 import net.openhft.chronicle.ChronicleQueueBuilder;
 import net.openhft.chronicle.ExcerptAppender;
 
-import static com.adioss.Utils.TEST_INDEX_DIRECTORY_PATH;
+import static com.adioss.Utils.*;
 
 public class Master {
     Logger m_logger = Logger.getLogger(Master.class.getName());
@@ -17,8 +19,12 @@ public class Master {
     private final Thread m_server;
 
     public Master() throws IOException {
+        File file = new File(Paths.get(TEST_BIG_FILE_PATH).toString());
+        if (!file.exists()) {
+            System.exit(0);
+        }
         String indexPath = Utils.prepareIndexDirectory(TEST_INDEX_DIRECTORY_PATH);
-        m_chronicle = ChronicleQueueBuilder.indexed(indexPath).source().bindAddress(12345).build();
+        m_chronicle = ChronicleQueueBuilder.indexed(indexPath).build();
         m_appender = m_chronicle.createAppender();
         m_server = new Thread(new Runnable() {
             @Override
@@ -26,9 +32,14 @@ public class Master {
                 m_chronicle.clear();
                 m_logger.info("start server");
                 for (long i = 1; i <= 1000000; i++) {
-                    String msg = "test" + i;
-                    m_logger.info("server stock:" + msg);
-                    publish(msg.getBytes());
+
+                    try {
+                        byte[] stream = Files.readAllBytes(Paths.get(TEST_BIG_FILE_PATH));
+                        m_logger.info("server:" + stream.length);
+                        publish(stream);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
