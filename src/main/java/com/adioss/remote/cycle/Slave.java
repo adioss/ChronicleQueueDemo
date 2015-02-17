@@ -1,8 +1,8 @@
-package com.adioss.remote;
+package com.adioss.remote.cycle;
 
 import java.io.*;
-import java.net.InetSocketAddress;
 import java.util.logging.*;
+import com.adioss.Utils;
 import net.openhft.chronicle.Chronicle;
 import net.openhft.chronicle.ChronicleQueueBuilder;
 import net.openhft.chronicle.ExcerptTailer;
@@ -16,8 +16,12 @@ public class Slave {
     private boolean m_running;
 
     public Slave() throws IOException, InterruptedException {
-        m_chronicle = ChronicleQueueBuilder.remoteTailer().connectAddress(new InetSocketAddress("localhost", 12345)).build();
-        m_tailer = m_chronicle.createTailer();
+        String indexPath = Utils.prepareIndexDirectory("d:\\test-sink");
+        int tenSeconds = 10 * 1000;
+        m_chronicle = ChronicleQueueBuilder.vanilla(indexPath).cycleLength(tenSeconds, false).build();
+        //m_chronicle = ChronicleQueueBuilder.remoteTailer().connectAddress(new InetSocketAddress("localhost", 12345)).build();
+        m_tailer = ChronicleQueueBuilder.sink(m_chronicle).connectAddress("localhost", 12345).build().createTailer();
+
         m_client = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -50,3 +54,4 @@ public class Slave {
         slave.start();
     }
 }
+

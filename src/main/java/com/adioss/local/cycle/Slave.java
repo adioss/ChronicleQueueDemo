@@ -1,4 +1,4 @@
-package com.adioss.cycle;
+package com.adioss.local.cycle;
 
 import java.io.*;
 import java.util.logging.*;

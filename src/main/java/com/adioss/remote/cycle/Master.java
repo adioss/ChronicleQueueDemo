@@ -1,4 +1,4 @@
-package com.adioss.remote;
+package com.adioss.remote.cycle;
 
 import java.io.*;
 import java.util.logging.*;
@@ -16,7 +16,9 @@ public class Master {
 
     public Master() throws IOException {
         String indexPath = Utils.prepareIndexDirectory("d:\\test");
-        m_chronicle = ChronicleQueueBuilder.indexed(indexPath).source().bindAddress(12345).build();
+        int tenSeconds = 10 * 1000;
+        Chronicle build = ChronicleQueueBuilder.vanilla(indexPath).cycleLength(tenSeconds, false).build();
+        m_chronicle = ChronicleQueueBuilder.source(build).bindAddress(12345).build();
         m_appender = m_chronicle.createAppender();
         m_server = new Thread(new Runnable() {
             @Override
@@ -28,7 +30,7 @@ public class Master {
                     m_logger.info("server stock:" + msg);
                     publish(msg.getBytes());
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(500);
                     } catch (InterruptedException e) {
                         //
                     }

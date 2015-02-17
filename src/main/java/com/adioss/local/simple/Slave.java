@@ -1,4 +1,4 @@
-package com.adioss.simple;
+package com.adioss.local.simple;
 
 import java.io.*;
 import java.util.logging.*;
