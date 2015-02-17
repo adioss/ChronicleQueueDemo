@@ -16,8 +16,8 @@ public class Master {
 
     public Master() throws IOException {
         String indexPath = Utils.prepareIndexDirectory("d:\\test");
-        int tenSeconds = 10 * 1000;
-        Chronicle build = ChronicleQueueBuilder.vanilla(indexPath).cycleLength(tenSeconds, false).build();
+        //int tenSeconds = 10 * 1000;
+        Chronicle build = ChronicleQueueBuilder.vanilla(indexPath).cycleLength(3600000).build();
         m_chronicle = ChronicleQueueBuilder.source(build).bindAddress(12345).build();
         m_appender = m_chronicle.createAppender();
         m_server = new Thread(new Runnable() {

@@ -18,7 +18,7 @@ public class Slave {
     public Slave() throws IOException, InterruptedException {
         String indexPath = Utils.prepareIndexDirectory("d:\\test-sink");
         int tenSeconds = 10 * 1000;
-        m_chronicle = ChronicleQueueBuilder.vanilla(indexPath).cycleLength(tenSeconds, false).build();
+        m_chronicle = ChronicleQueueBuilder.vanilla(indexPath).cycleLength(3600000).build();
         //m_chronicle = ChronicleQueueBuilder.remoteTailer().connectAddress(new InetSocketAddress("localhost", 12345)).build();
         m_tailer = ChronicleQueueBuilder.sink(m_chronicle).connectAddress("localhost", 12345).build().createTailer();
 
